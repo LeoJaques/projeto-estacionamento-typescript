@@ -1,10 +1,8 @@
-// import { HTMLInputElement } from 'dom'
-
 
 interface IVeiculo {
     nome: string,
     placa: string,
-    entrada: Date
+    entrada: Date | string
 }
 
 const createElement = (tag: string) => document.createElement(tag)
@@ -38,7 +36,11 @@ const createElement = (tag: string) => document.createElement(tag)
                 <td>${veiculo.placa}</td>
                 <td>${veiculo.entrada}</td>
                 <td>
-                <button class="delete" data-placa="${veiculo.placa}">X</button>
+                <button class="delete" data-placa="${veiculo.placa}">
+                    <span class="material-symbols-outlined">
+                        delete
+                    </span>
+                </button>
                 </td>
             `
 
@@ -57,13 +59,16 @@ const createElement = (tag: string) => document.createElement(tag)
             function remover(placa: string) {
                 const {entrada, nome} = ler().find((veiculo) => veiculo.placa === placa)
 
-                const tempo = calTempo(new Date().getTime() - entrada.getTime())
+                const tempo = calTempo(new Date().getTime() - new Date(entrada).getTime())
 
-                if(!confirm(`O veiculo ${nome} permaneceu estacionado por ${tempo} Deseja encerrar?`))
+                if(!confirm(`O veiculo ${nome} permaneceu estacionado por ${tempo} Deseja encerrar?`)){
+                    return 
+
+                }
                 
-                return 
 
-                salvar(ler().filter((veiculo) => adicionar(veiculo)))
+                salvar(ler().filter((veiculo) => veiculo.placa !== placa))
+                render()
             }
 
 
@@ -84,7 +89,7 @@ const createElement = (tag: string) => document.createElement(tag)
         $('#cadastrar')?.addEventListener('click', () => {
             const nome = $('#nome')?.value
             const placa = $('#placa')?.value
-            const entrada = new Date()
+            const entrada = new Date().toISOString()
 
             if (!nome || !placa) {
                 alert('Os campos "NOME" e "PLACA" são obrigatorios')
